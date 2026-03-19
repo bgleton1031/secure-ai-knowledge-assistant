@@ -1,8 +1,23 @@
 import streamlit as st
 import requests
 import os
+from datetime import datetime
 
 DATA_FOLDER = "data"
+LOG_FILE = "logs/activity_log.txt"
+
+def write_log(question, status, source_document):
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    log_entry = (
+        f"[{timestamp}] | "
+        f"Question: {question} | "
+        f"Status: {status} | "
+        f"Source: {source_document}\n"
+    )
+
+    with open(LOG_FILE, "a", encoding="utf-8") as log_file:
+        log_file.write(log_entry)
 
 def load_documents(folder_path):
     documents = []
@@ -80,12 +95,14 @@ with st.form("question_form"):
 if submitted:
     if user_input:
         if is_blocked_prompt(user_input):
+            write_log(user_input, "BLOCKED", "None")
             st.error("Request blocked: suspicious prompt detected.")
         else:
             documents = load_documents(DATA_FOLDER)
             best_doc, score = find_relevant_document(user_input, documents)
 
             if not best_doc or score <= 0:
+                write_log(user_input, "NOT_FOUND", "None")
                 st.warning("I could not find that information in the approved knowledge base.")
             else:
                 context = best_doc["content"]
@@ -134,5 +151,8 @@ User question:
                     st.write("### Source Document Used:")
                     st.write(best_doc["filename"])
 
+                    write_log(user_input, "ANSWERED", best_doc["filename"])
+
                 except Exception as e:
+                    write_log(user_input, "ERROR", "None")
                     st.error(f"Error: {e}")
