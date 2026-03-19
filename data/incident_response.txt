@@ -1,0 +1,7 @@
+Incident Response Guide
+
+- If a phishing email is suspected, do not click links or download attachments.
+- Report suspicious emails to the IT or Security team immediately.
+- Disconnect infected devices from the network if malware is suspected.
+- Document the time, system, and behavior observed.
+- Do not delete evidence related to a security incident.
