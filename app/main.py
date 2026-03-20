@@ -12,7 +12,8 @@ LOG_FILE = "logs/activity_log.txt"
 st.set_page_config(page_title="Secure AI Knowledge Assistant")
 
 st.title("Secure AI Knowledge Assistant")
-st.write("Ask a question based only on approved internal documents.")
+st.caption("A local AI assistant that answers only from approved internal documents.")
+st.info("Ask a question based only on approved internal documents. Access depends on your selected role.")
 
 # =========================
 # SIDEBAR
@@ -26,6 +27,15 @@ st.sidebar.write(role)
 st.sidebar.write("### Access Rules")
 st.sidebar.write("- user: can access password and acceptable use files")
 st.sidebar.write("- admin: can access all approved files")
+
+st.sidebar.write("### Security Features")
+st.sidebar.write("- Local LLM with Ollama")
+st.sidebar.write("- Multi-document retrieval")
+st.sidebar.write("- Prompt blocking")
+st.sidebar.write("- Role-based access")
+st.sidebar.write("- Activity logging")
+
+st.success("Request completed successfully.")
 
 # =========================
 # LOGGING
