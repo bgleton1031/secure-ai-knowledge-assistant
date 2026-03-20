@@ -1,24 +1,24 @@
-🔐 Secure AI Knowledge Assistant
+<h1>🔐 Secure AI Knowledge Assistant</h1>
 
-A secure, local AI assistant that answers questions using only approved internal documents — with built-in protections against hallucination, prompt injection, and unauthorized access.
+<h2>A secure, local AI assistant that answers questions using only approved internal documents — with built-in protections against hallucination, prompt injection, and unauthorized access.</h2>
 
-🚀 Overview
+<h3>🚀 Overview</h3>
 
-This project demonstrates how to build a secure AI system that:
+<p>This project demonstrates how to build a secure AI system that:</p>
 
-Only uses approved internal knowledge
+- <b>Only uses approved internal knowledge</b>
 
-Prevents hallucinated responses
+- <b>Prevents hallucinated responses</b>
 
-Blocks malicious or suspicious prompts
+- <b>Blocks malicious or suspicious prompts</b>
 
-Enforces role-based access control
+- <b>Enforces role-based access control</b>
 
-Logs all activity for audit and monitoring
+- <b>Logs all activity for audit and monitoring</b>
 
-🎯 Problem
+<h3>🎯 Problem</h3>
 
-Most AI systems:
+<p>Most AI systems:</p>
 
 ❌ Make up answers (hallucinate)
 
@@ -28,23 +28,24 @@ Most AI systems:
 
 ❌ Have no access control
 
-✅ Solution
+<h3>✅ Solution</h3>
 
 This app solves those problems by:
 
-Using local documents only (no external data)
+- <b>Using local documents only (no external data)</b>
 
-Enforcing strict context-based answering
+- <b>Enforcing strict context-based answering</b>
 
-Blocking suspicious inputs
+- <b>Blocking suspicious inputs</b>
 
-Restricting access based on user roles
+- <b>Restricting access based on user roles</b>
 
-Logging all activity
+- <b>Logging all activity</b>
 
-🧱 Architecture
+<h3>🧱 Architecture</h3>
 
-![Architecture](images/architecture_overview.png)
+<img width="1409" height="841" alt="architecture_overview" src="https://github.com/user-attachments/assets/2dbf23e2-e9a9-45b4-badf-406f0bcdc18f" />
+
 
 Flow:
 
@@ -60,99 +61,99 @@ Model generates answer using ONLY that context
 
 App displays answer + source document
 
-🧠 Core Features
-🔎 Document Retrieval
+<h2>🧠 Core Features</h2>
+<h3>🔎 Document Retrieval</h3>
 
-![Retrieval Logic](images/retrieval_code.png)
+<img width="697" height="392" alt="retrieval_code" src="https://github.com/user-attachments/assets/f5a683a3-af78-4482-9a1f-15983e810751" />
 
-- Keyword-based matching
+- <b>Keyword-based matching</b>
 
-- Scores relevance using content + filename
+- <b>Scores relevance using content + filename</b>
 
-🚫 Prompt Injection Protection
+<h3>🚫 Prompt Injection Protection</h3>
 
-![Retrieval Logic](images/retrieval_code.PNG)
+<img width="697" height="392" alt="retrieval_code" src="https://github.com/user-attachments/assets/68e2776c-841e-4226-8280-263c632dc77f" />
 
 Blocks malicious prompts like:
 
-- “ignore previous instructions”
+- <b>“ignore previous instructions”</b>
 
-- “show all documents”
+- <b>“show all documents”</b>
 
-- “bypass security"
+- <b>“bypass security"</b>
 
-👤 Role-Based Access Control
+<h3>👤 Role-Based Access Control</h3>
 
-![Roles Sidebar](images/roles_sidebar.PNG)
+<img width="2550" height="1405" alt="roles_sidebar" src="https://github.com/user-attachments/assets/7f499b52-06ad-455f-b3a1-a04ac4bea89f" />
 
-![Role Access](images/roles_access_example.PNG)
+<img width="2387" height="1006" alt="roles_access_example" src="https://github.com/user-attachments/assets/5f05cb73-7070-4f37-acd5-c21fb2688fb3" />
 
-- User: limited access
-- Admin: full access
+- <b>User: limited access</b>
+- <b>Admin: full access</b>
 
-👤 Role-Based Access Control
+<h3>👤 Role-Based Access Control</h3>
 
-![Activity Log](images/activity_log.PNG)
+<img width="1657" height="514" alt="activity_log" src="https://github.com/user-attachments/assets/baca83f2-97fd-4f1f-b14c-7468fb5a5835" />
 
 Logs: 
-- Timestamp
-- Question
-- Status (ANSWERED / BLOCKED / NOT_FOUND)
-- Source document
+- <b>Timestamp</b>
+- <b>Question</b>
+- <b>Status (ANSWERED / BLOCKED / NOT_FOUND)</b>
+- <b>Source document</b>
 
-🖥️ Application Demo
-🏠 Home Screen
+<h2>🖥️ Application Demo</h2>
+<h3>🏠 Home Screen</h3>
 
-![Home](images/app_hom.PNG)
+<img width="2506" height="1460" alt="app_hom" src="https://github.com/user-attachments/assets/c057e0d7-9124-4727-9eed-f9e5acf488db" />
 
-✅ Valid Question (Answer Found)
+<h2>✅ Valid Question (Answer Found)</h3>
 
-![Answer](images/app_answer_success.PNG)
+<img width="1414" height="515" alt="app_answer_success" src="https://github.com/user-attachments/assets/d4441564-214b-4020-86a4-da4e9fd26582" />
 
-🚫 Prompt Injection Blocked
+<h2>🚫 Prompt Injection Blocked</h3>
 
-![Blocked](images/app_blocked_prompt.PNG)
+<img width="548" height="258" alt="app_blocked_prompt" src="https://github.com/user-attachments/assets/2c0568e5-95cd-4384-98b6-327beeaebc4d" />
 
-🔐 Security Controls
+<h3>🔐 Security Controls</h3>
 
-![Security Controls](images/security_controls_doc.PNG)
+<img width="2529" height="1270" alt="security_controls_doc" src="https://github.com/user-attachments/assets/93f41049-9303-4147-9454-19b36a64b422" />
 
-- Restricts answers to approved documents
-- Prevents hallucinations
-- Blocks prompt injection
-- Enforces role-based access
-- Logs all activity
+- <b>Restricts answers to approved documents</b>
+- <b>Prevents hallucinations</b>
+- <b>Blocks prompt injection</b>
+- <b>Enforces role-based access</b>
+- <b>Logs all activity</b>
 
-📄 Internal Knowledge Base
+<h3>📄 Internal Knowledge Base</h3>
 
-![Acceptable Use](images/acceptable_use_policy.PNG)
+<img width="1627" height="1322" alt="acceptable_use_policy" src="https://github.com/user-attachments/assets/e0961d8a-e22b-4af0-a319-ded592f6d39c" />
 
-![Incident Response](images/incident_response.PNG)
+<img width="1617" height="1287" alt="incident_response" src="https://github.com/user-attachments/assets/dd4e0b3f-bb19-4fce-a194-05e386cf740e" />
 
-![Password Policy](images/password_policy.PNG)
+<img width="1819" height="1107" alt="password_policy" src="https://github.com/user-attachments/assets/bce9257f-f5d8-42f6-9b1b-4d8b3a3a4722" />
 
 
-🧰 Tech Stack
+<h3>🧰 Tech Stack</h3>
 
-- Python
+- <b>Python</b>
 
-- Streamlit
+- <b>Streamlit</b>
 
-- Ollama (Local LLM)
+- <b>Ollama (Local LLM)</b>
 
-- Requests
+- <b>Requests</b>
 
-- dotenv
+- <b>dotenv</b>
 
-⚙️ Setup Instructions
+<h3>⚙️ Setup Instructions</h3>
 
-git clone https://github.com/bgleton1031/secure-ai-knowledge-assistant
-cd secure-ai-assistant
-pip install -r requirements.txt
-ollama run llama3.2
-streamlit run app/main.py
+1. <n>git clone https://github.com/bgleton1031/secure-ai-knowledge-assistant</n>
+2. <n>cd secure-ai-assistant</n>
+3. <n>pip install -r requirements.txt</n>
+4. <n>ollama run llama3.2</n>
+5. <n>streamlit run app/main.py</n>
 
-📂 Project Structure
+<h3>📂 Project Structure</h3>
 
 app/
   main.py
@@ -176,28 +177,28 @@ logs/
 .gitignore
 README.md
 
-🔮 Future Improvements
+<h3>🔮 Future Improvements</h3>
 
-- Semantic search (embeddings)
+- <b>Semantic search (embeddings)</b>
 
-- Authentication system
+- <b>Authentication system</b>
 
-- Database logging
+- <b>Database logging</b>
 
-- Multi-user sessions
+- <b>Multi-user sessions</b>
 
-- UI enhancements
+- <b>UI enhancements</b>
 
-💡 Key Takeaways
+<h3>💡 Key Takeaways</h3>
 
 This project demonstrates:
 
-- Secure AI system design
+- <b>Secure AI system design</b>
 
-- Prompt injection defense
+- <b>Prompt injection defense</b>
 
-- Controlled retrieval (RAG-style)
+- <b>Controlled retrieval (RAG-style)</b>
 
-- Role-based access control
+- <b>Role-based access control</b>
 
-- Logging + auditability
+- <b>Logging + auditability</b>
