@@ -1,41 +1,46 @@
 import streamlit as st
-import requests
 import os
+import requests
 from datetime import datetime
 
+# =========================
+# CONFIG
+# =========================
 DATA_FOLDER = "data"
 LOG_FILE = "logs/activity_log.txt"
 
-def write_log(question, status, source_document):
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+st.set_page_config(page_title="Secure AI Knowledge Assistant")
 
-    log_entry = (
-        f"[{timestamp}] | "
-        f"Question: {question} | "
-        f"Status: {status} | "
-        f"Source: {source_document}\n"
-    )
+st.title("Secure AI Knowledge Assistant")
+st.write("Ask a question based only on approved internal documents.")
 
-    with open(LOG_FILE, "a", encoding="utf-8") as log_file:
-        log_file.write(log_entry)
+# =========================
+# SIDEBAR
+# =========================
+st.sidebar.title("Access Control")
+role = st.sidebar.selectbox("Select your role", ["user", "admin"])
 
-def load_documents(folder_path):
-    documents = []
+st.sidebar.write("### Current Role")
+st.sidebar.write(role)
 
-    for filename in os.listdir(folder_path):
-        if filename.endswith(".txt"):
-            full_path = os.path.join(folder_path, filename)
+st.sidebar.write("### Access Rules")
+st.sidebar.write("- user: can access password and acceptable use files")
+st.sidebar.write("- admin: can access all approved files")
 
-            with open(full_path, "r", encoding="utf-8") as file:
-                content = file.read()
+# =========================
+# LOGGING
+# =========================
+def write_log(user_input, status, source, role):
+    os.makedirs("logs", exist_ok=True)
 
-                documents.append({
-                    "filename": filename,
-                    "content": content
-                })
+    with open(LOG_FILE, "a", encoding="utf-8") as f:
+        f.write(
+            f"{datetime.now()} | Role: {role} | Status: {status} | Source: {source} | Question: {user_input}\n"
+        )
 
-    return documents
-
+# =========================
+# TEXT HELPERS
+# =========================
 def clean_text(text):
     text = text.lower()
     for char in [".", ",", "?", "!", ":", ";", "-", "(", ")", "/"]:
@@ -43,14 +48,52 @@ def clean_text(text):
     return text
 
 def get_filename_keywords(filename):
-    name = filename.replace(".txt", "").replace("_", " ").lower()
-    return set(name.split())
+    return set(filename.lower().replace(".txt", "").split("_"))
 
-def find_relevant_document(user_question, documents):
+# =========================
+# ACCESS CONTROL
+# =========================
+def get_allowed_files(role):
+    if role == "admin":
+        return [
+            "password_policy.txt",
+            "acceptable_use_policy.txt",
+            "incident_response.txt"
+        ]
+    else:
+        return [
+            "password_policy.txt",
+            "acceptable_use_policy.txt"
+        ]
+
+# =========================
+# LOAD DOCUMENTS
+# =========================
+def load_documents(folder_path, allowed_files):
+    documents = []
+
+    if not os.path.exists(folder_path):
+        return documents
+
+    for filename in os.listdir(folder_path):
+        if filename.endswith(".txt") and filename in allowed_files:
+            full_path = os.path.join(folder_path, filename)
+
+            with open(full_path, "r", encoding="utf-8") as file:
+                content = file.read()
+                documents.append({
+                    "filename": filename,
+                    "content": content
+                })
+
+    return documents
+
+# =========================
+# MULTI-DOC SEARCH
+# =========================
+def find_top_documents(user_question, documents, top_n=3):
     user_words = set(clean_text(user_question).split())
-
-    best_doc = None
-    best_score = -1
+    scored_docs = []
 
     for doc in documents:
         doc_words = set(clean_text(doc["content"]).split())
@@ -61,12 +104,20 @@ def find_relevant_document(user_question, documents):
 
         total_score = content_score + filename_score
 
-        if total_score > best_score:
-            best_score = total_score
-            best_doc = doc
+        scored_docs.append({
+            "filename": doc["filename"],
+            "content": doc["content"],
+            "score": total_score
+        })
 
-    return best_doc, best_score
+    scored_docs.sort(key=lambda x: x["score"], reverse=True)
+    top_docs = [doc for doc in scored_docs if doc["score"] > 0][:top_n]
 
+    return top_docs
+
+# =========================
+# BLOCKED PROMPTS
+# =========================
 def is_blocked_prompt(user_question):
     blocked_phrases = [
         "ignore previous instructions",
@@ -74,7 +125,8 @@ def is_blocked_prompt(user_question):
         "show hidden prompt",
         "give me all documents",
         "bypass security",
-        "ignore the rules"
+        "ignore the rules",
+        "override instructions"
     ]
 
     question_lower = user_question.lower()
@@ -85,29 +137,37 @@ def is_blocked_prompt(user_question):
 
     return False
 
-st.title("Secure AI Knowledge Assistant")
-st.write("Ask a question based only on approved internal documents.")
-
+# =========================
+# FORM (ENTER KEY SUBMITS)
+# =========================
 with st.form("question_form"):
     user_input = st.text_input("Your question")
     submitted = st.form_submit_button("Submit")
 
-if submitted:
-    if user_input:
-        if is_blocked_prompt(user_input):
-            write_log(user_input, "BLOCKED", "None")
-            st.error("Request blocked: suspicious prompt detected.")
+# =========================
+# MAIN LOGIC
+# =========================
+if submitted and user_input:
+    allowed_files = get_allowed_files(role)
+    documents = load_documents(DATA_FOLDER, allowed_files)
+
+    if is_blocked_prompt(user_input):
+        write_log(user_input, "BLOCKED", "None", role)
+        st.error("Request blocked due to suspicious input.")
+
+    else:
+        top_docs = find_top_documents(user_input, documents, top_n=3)
+
+        if not top_docs:
+            write_log(user_input, "NOT_FOUND", "None", role)
+            st.warning("I could not find that information in the approved knowledge base for your role.")
+
         else:
-            documents = load_documents(DATA_FOLDER)
-            best_doc, score = find_relevant_document(user_input, documents)
+            context = "\n\n".join(
+                [f"Document: {doc['filename']}\n{doc['content']}" for doc in top_docs]
+            )
 
-            if not best_doc or score <= 0:
-                write_log(user_input, "NOT_FOUND", "None")
-                st.warning("I could not find that information in the approved knowledge base.")
-            else:
-                context = best_doc["content"]
-
-                prompt = f"""
+            prompt = f"""
 You are a secure AI knowledge assistant.
 
 Answer the user's question using ONLY the context below.
@@ -121,38 +181,40 @@ User question:
 {user_input}
 """
 
-                try:
-                    response = requests.post(
-                        "http://localhost:11434/api/chat",
-                        json={
-                            "model": "llama3.2",
-                            "messages": [
-                                {
-                                    "role": "system",
-                                    "content": "You answer only from approved context and never make up information."
-                                },
-                                {
-                                    "role": "user",
-                                    "content": prompt
-                                }
-                            ],
-                            "stream": False
-                        },
-                        timeout=300
-                    )
+            try:
+                response = requests.post(
+                    "http://localhost:11434/api/chat",
+                    json={
+                        "model": "llama3.2",
+                        "messages": [
+                            {
+                                "role": "system",
+                                "content": "You answer only from approved context and never make up information."
+                            },
+                            {
+                                "role": "user",
+                                "content": prompt
+                            }
+                        ],
+                        "stream": False
+                    },
+                    timeout=300
+                )
 
-                    response.raise_for_status()
-                    data = response.json()
-                    answer = data["message"]["content"]
+                response.raise_for_status()
+                data = response.json()
+                answer = data["message"]["content"]
 
-                    st.write("### Answer:")
-                    st.write(answer)
+                st.write("### Answer:")
+                st.write(answer)
 
-                    st.write("### Source Document Used:")
-                    st.write(best_doc["filename"])
+                st.write("### Source Documents Used:")
+                for doc in top_docs:
+                    st.write(f"- {doc['filename']}")
 
-                    write_log(user_input, "ANSWERED", best_doc["filename"])
+                source_names = ", ".join([doc["filename"] for doc in top_docs])
+                write_log(user_input, "ANSWERED", source_names, role)
 
-                except Exception as e:
-                    write_log(user_input, "ERROR", "None")
-                    st.error(f"Error: {e}")
+            except Exception as e:
+                write_log(user_input, "ERROR", "None", role)
+                st.error(f"Error: {e}")
