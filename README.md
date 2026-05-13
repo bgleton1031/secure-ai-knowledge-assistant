@@ -1,8 +1,51 @@
-<h1>🔐 Secure AI Knowledge Assistant</h1>
+<h1>🔐 Secure AI Knowledge Assistant (SAKA)</h1>
 
-<h2>A secure, local AI assistant that answers questions using only approved internal documents — with built-in protections against hallucination, prompt injection, and unauthorized access.</h2>
+<h2>A production-intent, security-first RAG system built for organizations that need AI they can actually control.</h2>
 
-<h3>🚀 Overview</h3>
+<h3>Why I Built This</h3>
+
+<p>Most organizations approaching AI adoption face the same problem: off-the-shelf AI systems have no concept of internal boundaries. They hallucinate. They will answer from anywhere. They have no access controls, no audit trail, and no way to explain what they did or why.
+
+SAKA was designed to solve that, not at the policy layer, but at the system layer.
+
+This is a locally-deployed, document-grounded AI assistant built with security controls as core architecture, not bolted on afterward. Every design decision, from retrieval scope to role enforcement to audit logging, was made with the assumption that this system would operate inside a regulated or security-conscious environment.</p>
+
+<h2>Technical Architecture & Design Decisions</h2>
+
+<h3>Retrieval Scope — Why keyword matching over embeddings (v1)</h3>
+
+<p>SAKA v1 uses keyword-based document retrieval with relevance scoring across content and filename. This was a deliberate starting point, not a limitation. Embedding-based semantic search introduces external API dependency and vector database overhead that creates compliance surface area — particularly problematic for air-gapped or locally-deployed environments. The tradeoff: deterministic, auditable retrieval with slightly lower semantic flexibility. For the target use case (internal policy documents, compliance materials, SOPs), keyword precision outperforms semantic recall.
+
+*Planned v2 migration: local embedding model via Ollama to achieve semantic search without external data exposure.*
+
+Role-Based Access Control — Document-level enforcement
+
+RBAC is scoped to document-level access, not field-level. This decision reflects the primary threat model: preventing cross-role information leakage (e.g., a standard user accessing admin-tier documentation) rather than fine-grained field redaction within documents. The current two-tier model (user/admin) is intentionally minimal — designed to demonstrate the enforcement pattern and validate the access boundary logic before scaling role complexity.
+
+*Architectural note: role definitions are loaded at session initialization and evaluated against document metadata at retrieval time — access decisions happen before LLM context is assembled, not after.*
+
+Prompt Injection Mitigation — Pattern-based detection layer
+
+A pre-query inspection layer scans for known injection patterns before the input reaches the retrieval or generation pipeline. Blocked patterns include instruction override attempts, document enumeration requests, and privilege escalation language. This is a blocklist-based approach — effective against known attack signatures, with the acknowledged limitation that novel injection patterns require rule updates.
+
+*This is the same defense-in-depth pattern used in enterprise WAF configurations — multiple control layers rather than a single trust boundary.*
+
+Audit Logging — Structured event capture
+
+Every query is logged with: timestamp, input, response status (ANSWERED / BLOCKED / NOT_FOUND), and source document. The log schema is designed for downstream SIEM ingestion — fields are consistent and parseable. This isn't logging for debugging; it's logging for accountability and incident reconstruction.</p>
+
+<img width="674" height="402" alt="image" src="https://github.com/user-attachments/assets/2a0d82cb-8ef9-4a8b-b62f-584b2d3c594e" />
+
+<h3>Target Deployment Context</h3>
+
+<p>SAKA is designed for environments where AI adoption is constrained by data governance requirements: MSPs managing client data under NDA, healthcare organizations operating under HIPAA, financial services firms under SOX or SEC data handling rules, and any organization that needs to demonstrate AI accountability to an auditor or compliance officer.
+
+The system is intentionally scoped to the internal knowledge management use case — where the value is controlled, grounded AI access to organizational knowledge without the risk of data leakage, hallucinated policy, or unauthorized document access.</p>
+
+
+*The sections below cover features, architecture diagrams, demo screenshots, setup instructions, and project structure.*
+
+<h2>Project Breakdown</h2>
 
 <p>This project demonstrates how to build a secure AI system that:</p>
 
