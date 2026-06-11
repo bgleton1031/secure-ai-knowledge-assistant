@@ -165,11 +165,22 @@ Every query logged with:
 1. `git clone https://github.com/bgleton1031/secure-ai-knowledge-assistant`
 2. `cd secure-ai-knowledge-assistant`
 3. `pip install -r requirements.txt`
-4. `ollama pull llama3.2`
-5. `ollama pull nomic-embed-text`
+4. Pull the embedding model: `ollama pull nomic-embed-text`
+5. Pull the LLM — choose based on your hardware (see Performance Notes below):
+   - CPU-only machine: `ollama pull llama3.2:1b`
+   - GPU-enabled machine: `ollama pull llama3.2`
 6. `streamlit run app/main.py`
 
 > On first launch, SAKA will embed all documents and build the Chroma index. This takes 1–2 minutes. Subsequent launches load from the persisted index instantly.
+
+<h3>⚡ Performance Notes</h3>
+<p>SAKA runs fully local — no external APIs, no data leaving the machine. LLM inference speed depends entirely on the host hardware.</p>
+
+- <b>CPU-only (no dedicated GPU):</b> Set <code>OLLAMA_MODEL = "llama3.2:1b"</code> in <code>app/main.py</code> for faster responses. The 1B model is 2–3x faster on CPU with minimal quality tradeoff for grounded RAG use cases.
+- <b>Dedicated GPU:</b> Set <code>OLLAMA_MODEL = "llama3.2"</code> (3B) or larger. Ollama automatically leverages CUDA for significantly faster inference.
+- <b>Production deployment:</b> SAKA is architected for containerized deployment (Docker / AWS ECS) where GPU-accelerated instances eliminate the local hardware constraint entirely.
+
+<p><em>The local CPU deployment is intentional for demo and air-gapped environments. The same codebase deploys to cloud infrastructure without modification.</em></p>
 
 <h3>📂 Project Structure</h3>
 
